@@ -72,7 +72,7 @@ public class BoardDAO
 			pstmt.setString(4, dto.getEmail());
 			pstmt.setString(5, dto.getSubject());
 			pstmt.setString(6, dto.getContent());
-			pstmt.setString(7, dto.getIpaddr());
+			pstmt.setString(7, dto.getIpAddr());
 			
 			result = pstmt.executeUpdate();
 			pstmt.close();
@@ -152,7 +152,7 @@ public class BoardDAO
 				dto.setNum(rs.getInt("NUM"));
 				dto.setName(rs.getString("NAME"));
 				dto.setSubject(rs.getString("SUBJECT"));
-				dto.setHicCount(rs.getInt("HITCOUNT"));
+				dto.setHitCount(rs.getInt("HITCOUNT"));
 				dto.setCreated(rs.getString("CREATED"));
 				
 				result.add(dto);
@@ -220,8 +220,8 @@ public class BoardDAO
 				result.setEmail(rs.getString("EMAIL"));
 				result.setSubject(rs.getString("SUBJECT"));
 				result.setContent(rs.getString("CONTENT"));
-				result.setIpaddr(rs.getString("IPADDR"));
-				result.setHicCount(rs.getInt("HITCOUNT"));
+				result.setIpAddr(rs.getString("IPADDR"));
+				result.setHitCount(rs.getInt("HITCOUNT"));
 				result.setCreated(rs.getString("CREATED"));
 			}
 			rs.close();
@@ -241,7 +241,7 @@ public class BoardDAO
 		int result = 0;
 		
 		PreparedStatement pstmt = null;
-		String sql ="";
+		String sql = "";
 		
 		try
 		{

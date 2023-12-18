@@ -8,8 +8,17 @@ public class BoardDTO
 {
 	// TBL_BOARD 테이블의 레코드 구조와 동일한 속성 구성
 	private int num;
-	private String name, pwd, email, subject, content, ipaddr, created;
-	private int hicCount;
+	private String name, pwd, email, subject, content, ipAddr, created;
+	
+	public String getIpAddr()
+	{
+		return ipAddr;
+	}
+	public void setIpAddr(String ipAddr)
+	{
+		this.ipAddr = ipAddr;
+	}
+	private int hitCount;
 	
 	// 사용자 정의 생성자를 정의하지 않음
 	// -> default 생성자 자동 삽입
@@ -63,14 +72,7 @@ public class BoardDTO
 	{
 		this.content = content;
 	}
-	public String getIpaddr()
-	{
-		return ipaddr;
-	}
-	public void setIpaddr(String ipaddr)
-	{
-		this.ipaddr = ipaddr;
-	}
+
 	public String getCreated()
 	{
 		return created;
@@ -79,13 +81,13 @@ public class BoardDTO
 	{
 		this.created = created;
 	}
-	public int getHicCount()
+	public int getHitCount()
 	{
-		return hicCount;
+		return hitCount;
 	}
-	public void setHicCount(int hicCount)
+	public void setHitCount(int hitCount)
 	{
-		this.hicCount = hicCount;
+		this.hitCount = hitCount;
 	}
 	
 	
