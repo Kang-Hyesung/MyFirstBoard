@@ -1,0 +1,45 @@
+@charset "UTF-8";
+
+*{
+	background-color:#EBE3D5;
+	font-family: 굴림;
+}
+
+.txtNum{
+	border: none;
+	width: 40pt;
+	text-align: center;
+	background-color:#EBE3D5;
+}
+
+.txt{
+	border: none;
+	width: 40pt;
+	text-align: center;
+	background-color:#EBE3D5;
+}
+
+.btn{
+	border: 2;
+	background-color:#EBE3D5;
+	font-weight : bold;
+	padding: 10px 30px;
+	font-size: 10pt;
+}
+
+.btn:hover {
+      background-color:#B0A695;
+      transition: 2.0s;
+  }
+.btn:active {
+    background-color: #ffbf00;
+}
+
+.tbBox tr td:first-child 
+{text-align: center;	
+}
+
+.tb2 tr:first-child {
+	text-align: center;
+	font-size: 11pt;
+}
