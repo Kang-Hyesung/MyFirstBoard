@@ -30,7 +30,7 @@ public class BoardDAO
 			
 		Statement stmt = null;
 		ResultSet rs = null;
-		String sql = null;
+		String sql = "";
 		
 		try
 		{
@@ -260,8 +260,99 @@ public class BoardDAO
 		return result;
 	}//end deleteDate(int num)
 	
+	// 특정 게시물을 수정하는 기능의 메소드 정의
+	public int updateDate(BoardDTO dto)
+	{
+		int result = 0;
+		
+		PreparedStatement pstmt = null;
+		String sql = "";
+		
+		try
+		{
+			sql = "UPDATE TBL_BOARD"
+					+ " SET NAME=?, PWD=?, EMAIL=?, SUBJECT=?, CONTENT=? WHERE NUM=?";
+			
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setString(1, dto.getName());
+			pstmt.setString(2, dto.getPwd());
+			pstmt.setString(3, dto.getEmail());
+			pstmt.setString(4, dto.getSubject());
+			pstmt.setString(5, dto.getContent());
+			pstmt.setInt(6, dto.getNum());
+			
+			result = pstmt.executeUpdate();
+			
+			pstmt.close();
+		} catch (Exception e)
+		{
+			System.out.println(e.toString());
+		}
+		
+		return result;
+	}//end updateDate(BoardDTO dto)
 	
+	// 특정 게시물의 이전 게시물 번호를 얻어내는 메소드 정의
+	// (이전 게시물이 존재하지 않을 경우 -1 반환)
+	public int getBeforeNum(int num)
+	{
+		int result = 0;
+		
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		String sql = "";
+		
+		try
+		{
+			sql = "SELECT NVL(MAX(NUM), -1) AS BEFORENUM FROM TBL_BOARD WHERE NUM < ?";
+			
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setInt(1, num);
+			
+			rs = pstmt.executeQuery();
+			
+			if(rs.next())
+				result = rs.getInt("BEFORENUM");
+			rs.close();
+			pstmt.close();
+		} catch (Exception e)
+		{
+			System.out.println(e.toString());
+		}
+		
+		return result;
+	}
 	
+	// 특정 게시물의 다음 게시물 번호를 얻어내는 메소드 정의
+	// (이전 게시물이 존재하지 않을 경우 -1 반환)
+	public int getNextNum(int num)
+	{
+		int result = 0;
+		
+		PreparedStatement pstmt = null;
+		String sql = "";
+		ResultSet rs = null;
+		
+		try
+		{
+			sql = "SELECT NVL(MIN(NUM), -1) AS NEXTNUM FROM TBL_BOARD WHERE NUM > 50";
+			
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setInt(1, num);
+			
+			rs = pstmt.executeQuery();
+			
+			if(rs.next())
+				result = rs.getInt("NEXTNUM");
+			rs.close();
+			pstmt.close();
+		} catch (Exception e)
+		{
+			System.out.println(e.toString());
+		}
+		
+		return result;
+	}
 }
 
 
