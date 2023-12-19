@@ -127,7 +127,6 @@ public class BoardDAO
 		
 		try
 		{
-			sql = "";
 			sql += "SELECT NUM, NAME, SUBJECT, HITCOUNT, CREATED";
 			sql += " FROM";
 			sql += " (";
@@ -335,7 +334,7 @@ public class BoardDAO
 		
 		try
 		{
-			sql = "SELECT NVL(MIN(NUM), -1) AS NEXTNUM FROM TBL_BOARD WHERE NUM > 50";
+			sql = "SELECT NVL(MIN(NUM), -1) AS NEXTNUM FROM TBL_BOARD WHERE NUM > ?";
 			
 			pstmt = conn.prepareStatement(sql);
 			pstmt.setInt(1, num);

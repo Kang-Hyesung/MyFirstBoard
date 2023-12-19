@@ -11,7 +11,7 @@
    03. com.test.BoardDAO.java   CRUD 구현
    04. MyUtil.java     페이징처리
    
-   05. List.java
+   05. List.jsp
    06. Created.jsp
    07. Created_ok.jsp
    08. Article.jsp
