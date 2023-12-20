@@ -24,7 +24,7 @@ public class BoardDAO
 	}
 	
 	// 게시물 번호의 최대값 얻어내기
-	public int getMaxValue()
+	public int getMaxNum()
 	{
 		int result = 0;
 			
@@ -168,7 +168,7 @@ public class BoardDAO
 	}//end getList(int start, int end)
 	
 	// 특정 게시물 조회에 따른 조회 횟수 증가 메소드 정의
-	public int updateHitcount(int num)
+	public int updateHitCount(int num)
 	{
 		int result = 0;
 		
@@ -177,7 +177,7 @@ public class BoardDAO
 		
 		try
 		{
-			sql = "UPDATE TBL_BOARD SET HITCOUNT = HITCOUNT + 1 WHERE NUM = 1";
+			sql = "UPDATE TBL_BOARD SET HITCOUNT = HITCOUNT + 1 WHERE NUM = ?";
 			pstmt = conn.prepareStatement(sql);
 			pstmt.setInt(1, num);
 			result = pstmt.executeUpdate();

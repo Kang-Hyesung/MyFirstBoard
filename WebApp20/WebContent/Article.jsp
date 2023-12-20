@@ -19,7 +19,7 @@
 	int num = Integer.parseInt(strNum);
 	
 	// 해당 게시물의 조회수 증가
-	dao.updateHitcount(num);
+	dao.updateHitCount(num);
 	
 	// 이전, 다음 게시물 번호 확인
 	int beforeNum = dao.getBeforeNum(num);		// ?? 103
@@ -66,7 +66,11 @@
 	</div><!-- #bbs_title -->
 
 	<div id="bbsArticle">
-	
+		
+		<input type="hidden" name="num" value="<%=dto.getNum() %>">
+		<input type="hidden" name="pageNum" value="<%=pageNum %>">
+		
+		
 		<div id="bbsArticle_header">
 			<!-- 게시물의 제목입니다. -->
 			<%=dto.getSubject() %>
@@ -160,7 +164,9 @@
 		<div id="leftFooter">
 			<input type="button" value="수정" class="btn2" 
 			onclick="javascript:location.href='<%=cp%>/Updated.jsp?num=<%=dto.getNum()%>&pageNum=<%=pageNum%>'"/>
-			<input type="button" value="삭제" class="btn2" />
+			<input type="button" value="삭제" class="btn2" 
+			onclick="javascript:location.href='<%=cp%>/Deleted.jsp?num=<%=dto.getNum()%>'"/>
+			
 		</div><!-- #leftFooter -->
 		
 		<div id="rightFooter">

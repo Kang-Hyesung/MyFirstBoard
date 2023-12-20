@@ -42,11 +42,11 @@
 	MyUtil myUtil = new MyUtil();
 	
 	// 전체 데이터 갯수 구하기 -> 검색 데이터 갯수 구하기로 변경 예정
-	int dataCount = dao.getDataCount();
+	int dataCount = dao.getDataCount();	// 그냥 전체 레코드 수 뽑아옴
 	
 	// 전체 데이터를 기준으로 총 페이지 수 계산
-	int numPerPage = 10;		// 한 페이지에 표시할 데이터 갯수
-	int totalPage = myUtil.getPageCount(numPerPage, dataCount);
+	int numPerPage = 10;										// 한 페이지에 표시할 데이터 갯수
+	int totalPage = myUtil.getPageCount(numPerPage, dataCount);	// 총 페이지 수
 	
 	// 전체 페이지 수 보다 표시할 페이지가 큰 경우
 	// 표시할 페이지를 전체 페이지로 처리

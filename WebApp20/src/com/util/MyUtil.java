@@ -39,9 +39,9 @@ public class MyUtil
 	// currentPage : 현재 표시할 페이지
 	// totalPage : 전체 페이지 수
 	// listUrl : 링크를 설정할 url
-	// 링크의 경우 
+	// 링크의 경우
 	// <a href='List.jsp?pageNum=13'>13</a>
-	// 그러나 제목/내용/작성자 등으로 검색할 때는 
+	// 그러나 제목/내용/작성자 등으로 검색할 때는
 	// List.jsp?serachKey=subject&searchValue=날씨 이런식으로 들어오고 여기에 &pageNum=13
 	// 이런식으로 추가해주어야 한다
 	
@@ -54,7 +54,7 @@ public class MyUtil
 		// 페이징 처리 시 게시물 리스트 하단의 숫자를 10개씩 보여주겠다.
 		
 		int currentPageSetup;
-		// 현재 페이지(이 페이지를 기준으롭 ㅗ여주는 숫자가 달라져야 하기 때문)
+		// 현재 페이지(이 페이지를 기준으로 보여주는 숫자가 달라져야 하기 때문)
 		
 		int page;
 		int n;
@@ -73,7 +73,7 @@ public class MyUtil
 		 	- 클라이언트 요청의 형태 -> List.jsp	-> (가공) -> List.jsp + ? + pageNum=1
 		 	
 		 	- 클라이언트 요청의 형태 -> List.jsp?subject=study -> (가공) -> List.jsp?subject=study + & + pageNum=1
-		 */
+		*/
 		
 		// 링크를 설정할 URL 에 대한 선가공 처리
 		if(listUrl.indexOf("?") != -1)	// 링크를 설정할 URL 에 ? 가 들어있으면

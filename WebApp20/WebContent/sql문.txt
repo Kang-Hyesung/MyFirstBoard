@@ -1,0 +1,236 @@
+SELECT USER
+FROM DUAL;
+--== SCOTT
+
+--○ 기존 테이블 제거
+DROP TABLE TBL_BOARD PURGE;
+--== Table TBL_BOARD이(가) 삭제되었습니다.
+
+--○ 게시판 전용 테이블 생성 (TBL_BOARD)
+CREATE TABLE TBL_BOARD
+( NUM       NUMBER(9)                           NOT NULL    -- 게시물 번호
+, NAME      VARCHAR2(30)                        NOT NULL    -- 게시물 작성자
+, PWD       VARCHAR2(20)                        NOT NULL    -- 게시물 암호
+, EMAIL     VARCHAR2(50)                                    -- 작성자 이메일
+, SUBJECT   VARCHAR2(100)                       NOT NULL    -- 게시물 제목
+, CONTENT   VARCHAR2(4000)                      NOT NULL    -- 게시물 내용
+, IPADDR    VARCHAR2(20)                                    -- 접속한 클라이언트 IP 주소
+, HITCOUNT  NUMBER          DEFAULT 0           NOT NULL    -- 게시물 조회수
+, CREATED   DATE            DEFAULT SYSDATE     NOT NULL    -- 게시물 작성일
+, CONSTRAINT BOARD_NUM_PK PRIMARY KEY(NUM)                  -- 게시물 번호에 PK 제약조건 설정
+);
+--== Table TBL_BOARD이(가) 생성되었습니다.
+
+-- ○ 게시물 번호의 최대값을 얻어내는 쿼리문 구성
+SELECT NVL(MAX(NUM), 0) AS MAXNUM
+FROM TBL_BOARD;
+
+SELECT NVL(MAX(NUM), 0) AS MAXNUM FROM TBL_BOARD
+;
+
+--○ 게시물 작성 쿼리문 구성
+INSERT INTO TBL_BOARD(NUM, NAME, PWD, EMAIL, SUBJECT, CONTENT, IPADDR, HITCOUNT, CREATED)
+VALUES(1, '노은하', '1234', 'neh@test.com', '작성테스트', '게시물내용작성', '211.238.142.160', 0, SYSDATE);
+
+INSERT INTO TBL_BOARD(NUM, NAME, PWD, EMAIL, SUBJECT, CONTENT, IPADDR, HITCOUNT, CREATED) VALUES(1, '노은하', '1234', 'neh@test.com', '작성테스트', '게시물내용작성', '211.238.142.160', 0, SYSDATE)
+;
+--== 1 행 이(가) 삽입되었습니다.
+
+--○ 롤백
+ROLLBACK;
+--== 롤백 완료
+
+--○ DB 레코드 갯수를 가져오는 쿼리문 구성 (게시물 수)
+SELECT COUNT(*) AS COUNT
+FROM TBL_BOARD;
+
+SELECT COUNT(*) AS COUNT FROM TBL_BOARD
+;
+
+--○ 특정 영역의(시작번호~끝번호) 게시물 목록을 읽어오는 쿼리문 구성
+--   번호, 작성자, 제목, 조회수, 작성일
+
+SELECT NUM, NAME, SUBJECT, HITCOUNT, CREATED
+FROM
+(
+    SELECT ROWNUM RNUM, DATA.*
+    FROM
+    (
+        SELECT NUM, NAME, SUBJECT, HITCOUNT, TO_CHAR(CREATED, 'YYYY-MM-DD') AS CREATED
+        FROM TBL_BOARD
+        ORDER BY NUM DESC
+    ) DATA
+)
+WHERE RNUM >= 1 AND RNUM <= 10;
+
+SELECT NUM, NAME, SUBJECT, HITCOUNT, CREATED FROM (SELECT ROWNUM RNUM, DATA.* FROM (SELECT NUM, NAME, SUBJECT, HITCOUNT, TO_CHAR(CREATED, 'YYYY-MM-DD') AS CREATED FROM TBL_BOARD ORDER BY NUM DESC) DATA ) WHERE RNUM >= 1 AND RNUM <= 10
+;
+
+--○ 특정 게시물의 조회에 따른 조회 횟수 증가 쿼리문 구성
+
+UPDATE TBL_BOARD
+SET HITCOUNT = HITCOUNT + 1
+WHERE NUM = 1;
+
+UPDATE TBL_BOARD SET HITCOUNT = HITCOUNT + 1 WHERE NUM = 1
+;
+-- 로그화
+
+--○ 특정 게시물의 내용을 읽어오는 쿼리문 구성
+SELECT NUM, NAME, PWD, EMAIL, SUBJECT, CONTENT, IPADDR, HITCOUNT, TO_CHAR(CREATED, 'YYYY-MM-DD') AS CREATED
+FROM TBL_BOARD
+WHERE NUM=1;
+
+SELECT NUM, NAME, PWD, EMAIL, SUBJECT, CONTENT, IPADDR, HITCOUNT, TO_CHAR(CREATED, 'YYYY-MM-DD') AS CREATED FROM TBL_BOARD WHERE NUM=1
+;
+--== 1	노은하	1234	neh@test.com	작성테스트	게시물내용작성	211.238.142.160	0	2023-12-18
+
+--○ 특정 게시물을 삭제하는 쿼리문 구성
+DELETE
+FROM TBL_BOARD
+WHERE NUM=1;
+
+DELETE FROM TBL_BOARD WHERE NUM=1
+;
+
+--○ 특정 게시물을 수정하는 쿼리문 구성
+--   (게시물 상세보기 페이지 -> Article.jsp 내에서의 처리)
+--   작성자, 패스워드, 이메일, 제목, 내용
+UPDATE TBL_BOARD
+SET NAME='박가영', PWD='123456', EMAIL='pky@test.com', SUBJECT='수정제목', CONTENT='수정내용'
+WHERE NUM=1;
+
+UPDATE TBL_BOARD SET NAME='박가영', PWD='123456', EMAIL='pky@test.com', SUBJECT='수정제목', CONTENT='수정내용' WHERE NUM=1
+;
+--== 1 행 이(가) 업데이트되었습니다.
+
+--○ 특정 게시물(50)의 다음 번호 읽어오는 쿼리문 구성
+SELECT NVL(LEAD(NUM) OVER (ORDER BY NUM), -1)
+FROM TBL_BOARD
+WHERE NUM = 50;
+
+SELECT NVL(MIN(NUM), -1) AS NEXTNUM
+FROM TBL_BOARD
+WHERE NUM > 50;
+
+SELECT NVL(MIN(NUM), -1) AS NEXTNUM FROM TBL_BOARD WHERE NUM > 50
+;
+
+--○ 특정 게시물(50)의 이전 번호 읽어오는 쿼리문 구성
+SELECT NVL(LAG(NUM) OVER (ORDER BY NUM), -1)
+FROM TBL_BOARD
+WHERE NUM = 50;
+
+SELECT NVL(MAX(NUM), -1) AS BEFORENUM 
+FROM TBL_BOARD 
+WHERE NUM < 50;
+
+SELECT NVL(MAX(NUM), -1) AS BEFORENUM FROM TBL_BOARD WHERE NUM < 50
+;
+
+DESC TBL_BOARD;
+
+DELETE
+FROM TBL_BOARD;
+--== 1 행 이(가) 삭제되었습니다.
+
+SELECT *
+FROM TBL_BOARD;
+--== 조회결과없음
+
+COMMIT; -- 커밋 완료.
+
+------------------------------------------------------------------------------
+PLSQL
+
+
+
+
+SELECT USER
+FROM DUAL;
+
+--== SCOTT
+
+DESC TBL_BOARD;
+/*
+이름       널?       유형             
+-------- -------- -------------- 
+NUM      NOT NULL NUMBER(9)      
+NAME     NOT NULL VARCHAR2(30)   
+PWD      NOT NULL VARCHAR2(20)   
+EMAIL             VARCHAR2(50)   
+SUBJECT  NOT NULL VARCHAR2(100)  
+CONTENT  NOT NULL VARCHAR2(4000) 
+IPADDR            VARCHAR2(20)   
+HITCOUNT NOT NULL NUMBER         
+CREATED  NOT NULL DATE     
+*/
+
+DECLARE
+    V_NUM      NUMBER(9)    := 1;     
+    V_NAME     VARCHAR2(30);   
+    V_PWD      VARCHAR2(20);   
+    V_EMAIL    VARCHAR2(50);  
+    V_SUBJECT  VARCHAR2(100);  
+    V_CONTENT  VARCHAR2(4000); 
+    V_IPADDR   VARCHAR2(20);   
+    V_HITCOUNT NUMBER;         
+    V_CREATED  DATE         := TO_DATE('2020-12-12', 'YYYY-MM-DD'); 
+BEGIN
+    LOOP
+        EXIT WHEN V_NUM > 684;
+        
+        V_NUM := V_NUM + 1;
+        
+        IF (MOD(V_NUM, 5) = 0) THEN
+            V_PWD := 'java006$';
+            V_CONTENT := '영화관련 내용물 작성';
+            V_IPADDR := '211.238.142.160';
+            V_NAME := '노';
+            V_SUBJECT := '취미';
+        ELSIF (MOD(V_NUM, 3) = 0) THEN
+            V_PWD := 'java007$';
+            V_CONTENT := '떡볶이관련 내용물 작성';
+            V_IPADDR := '211.238.142.165';
+            V_NAME := '박';
+            V_SUBJECT := '음식';
+        ELSIF (MOD(V_NUM, 7) = 0) THEN
+            V_PWD := 'java008$';
+            V_CONTENT := '축구관련 내용물 작성';
+            V_IPADDR := '211.238.142.170';
+            V_NAME := '채';
+            V_SUBJECT := '운동';
+        ELSE
+            V_PWD := 'java002$';
+            V_CONTENT := '눈보라관련 내용물 작성';
+            V_IPADDR := '211.238.142.175';
+            V_NAME := '김';
+            V_SUBJECT := '날씨';
+        END IF;
+        
+        V_NAME := V_NAME || '윤수' || LTRIM(TO_CHAR(V_NUM));
+        V_SUBJECT := V_SUBJECT || '에 대해 작성한 게시물 ' || LTRIM(TO_CHAR(V_NUM));
+        
+        V_CREATED := V_CREATED + 1;
+        
+        IF (MOD(V_NUM, 2) = 0) THEN
+            V_EMAIL := 'apple' || V_NUM || '@test.com';
+            V_HITCOUNT := 29;
+        ELSIF (MOD(V_NUM, 3) = 0) THEN
+            V_EMAIL := 'test' || V_NUM || '@test.com';
+            V_HITCOUNT := 34;
+        ELSIF (MOD(V_NUM, 4) = 0) THEN
+            V_EMAIL := 'study' || V_NUM || '@test.com';
+            V_HITCOUNT := 47;
+        ELSE
+            V_EMAIL := 'snow' || V_NUM || '@test.com';
+            V_HITCOUNT := 11;
+        END IF;
+        
+        INSERT INTO TBL_BOARD(NUM, NAME, PWD, EMAIL, SUBJECT, CONTENT, IPADDR, HITCOUNT, CREATED)
+        VALUES(V_NUM, V_NAME, V_PWD, V_EMAIL, V_SUBJECT, V_CONTENT, V_IPADDR, V_HITCOUNT, V_CREATED);
+    END LOOP;
+END;
+--== PL/SQL 프로시저가 성공적으로 완료되었습니다.
+
+COMMIT;
