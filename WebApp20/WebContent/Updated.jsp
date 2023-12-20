@@ -13,6 +13,12 @@
 	int num = Integer.parseInt(request.getParameter("num"));
 	String pageNum = request.getParameter("pageNum");
 	
+	// ※ 삭제 액션 요청 처리과정에서 추가한 코드 ------------------
+	String statusStr = request.getParameter("status");
+	int status = Integer.parseInt(statusStr);
+	// --------------------- 삭제 액션 요청 처리과정에서 추가한 코드
+	
+	
 	Connection conn = DBConn.getConnection();
 	BoardDAO dao = new BoardDAO(conn);
 	
@@ -31,6 +37,10 @@
 <title>Updated.jsp</title>
 <link rel="stylesheet" type="text/css" href="<%=cp %>/css/style.css">
 <link rel="stylesheet" type="text/css" href="<%=cp %>/css/created.css">
+
+<style type="text/css">
+	#pwd {background-color: #ffeeff;}
+</style>
 
 <script type="text/javascript" src="<%=cp%>/js/util.js"></script>
 <script type="text/javascript">
@@ -157,6 +167,44 @@
 		
 		f.submit();	
 		
+	}// end sendIt()
+	
+	function removeIt()
+	{
+		f = document.myForm;
+		
+		// 패스워드 입력 확인 --------------------------------------
+		
+		// 필수 입력 항목 기재 여부 확인 및 공백 처리
+		str = f.pwd.value;
+		str = str.trim();
+		f.pwd.value = str;
+		
+		if(!str)
+		{
+			alert("\n패스워드를 입력하세요");
+			f.pwd.focus();
+			return;
+		}
+		
+		// ---------------------------------------패스워드 입력 확인
+		
+		// 패스워드 일치 여부 확인 ---------------------------------
+		// 해당 게시물 작성 시 설정한 패스워드와
+		// 게시물을 삭제하는 과정에서 입력한 패스워드가
+		// 서로 일치하는지를 확인하여 액션 처리 수행 여부 판단
+		var pwdSource = f.pwdSource.value;
+		if(str != pwdSource)
+		{
+			alert("\n패스워드가 맞지 않습니다.");
+			f.pwd.focus();
+			return;
+		}
+		// ----------------------------------패스워드 일치 여부 확인
+		
+		f.action = "<%=cp%>/Deleted_ok.jsp";
+		
+		f.submit();	
 	}
 	
 </script>
@@ -177,7 +225,20 @@
 				<dl>
 					<dt>제목</dt>
 					<dd>
-						<input type="text" name="subject" size="64" maxlength="100" class="boxTF" value="<%=dto.getSubject()%>"/>
+						<%
+						if(status == 1)		// status == 1 -> 수정 액션 요청
+						{
+						%>
+							<input type="text" name="subject" size="64" maxlength="100" class="boxTF" value="<%=dto.getSubject()%>"/>
+						<%
+						}
+						else				// status == 2 -> 삭제 액션 요청
+						{
+						%>
+							<input type="text" name="subject" size="64" maxlength="100" class="boxTF" value="<%=dto.getSubject()%>" disabled="disabled"/>
+						<%
+						}
+						%>
 					</dd>
 				</dl>
 			</div><!-- .bbsCreated_bottomLine -->
@@ -186,8 +247,22 @@
 				<dl>
 					<dt>작 성 자</dt>
 					<dd>
-						<input type="text" name="name" size="35"
+						<%
+						if(status==1)		// status == 1 -> 수정 액션 요청
+						{
+						%>
+							<input type="text" name="name" size="35"
 							maxlength="20" class="boxTF" value="<%=dto.getName()%>"/>
+						<%
+						}
+						else				// status == 2 -> 삭제 액션 요청
+						{
+						%>
+							<input type="text" name="name" size="35"
+							maxlength="20" class="boxTF" value="<%=dto.getName()%>" disabled="disabled"/>
+						<%
+						}	
+						%>
 					</dd>
 				</dl>
 			</div><!-- .bbsCreated_bottomLine -->
@@ -196,7 +271,20 @@
 				<dl>
 					<dt>이 메 일</dt>
 					<dd>
-						<input type="email" name="email" size="35" maxlength="50" class="boxTF" value="<%=emailStr%>"/>
+						<%
+						if(status==1)		// status == 1 -> 수정 액션 요청
+						{
+						%>
+							<input type="email" name="email" size="35" maxlength="50" class="boxTF" value="<%=emailStr%>"/>
+						<%
+						}
+						else				// status == 2 -> 삭제 액션 요청
+						{
+						%>
+							<input type="email" name="email" size="35" maxlength="50" class="boxTF" value="<%=emailStr%>" disabled="disabled"/>
+						<%
+						}	
+						%>
 					</dd>
 				</dl>
 			</div><!-- .bbsCreated_bottomLine -->
@@ -205,8 +293,20 @@
 				<dl>
 					<dt>내 용</dt>
 					<dd>
-						<textarea rows="12" cols="63" name="content" 
-						class="boxTA"><%=dto.getContent()%></textarea>
+						<%
+						if(status==1)		// status == 1 -> 수정 액션 요청
+						{
+						%>
+							<textarea rows="12" cols="63" name="content" class="boxTA"><%=dto.getContent()%></textarea>
+						<%
+						}
+						else				// status == 2 -> 삭제 액션 요청
+						{
+						%>
+							<textarea rows="12" cols="63" name="content" class="boxTA" disabled="disabled"><%=dto.getContent()%></textarea>
+						<%
+						}	
+						%>
 					</dd>
 				</dl>
 			</div><!-- #bbsCreated_content -->
@@ -216,7 +316,7 @@
 					<dt>패스워드</dt>
 					<dd>
 						<input type="hidden" name="pwdSource" value="<%=dto.getPwd()%>">
-						<input type="password" name="pwd" size="35" maxlength="10" class="boxTF"/>
+						<input type="password" name="pwd" size="35" maxlength="10" class="boxTF" id="pwd"/>
 						&nbsp;<span style="font-size: 6pt;">
 						(게시물 수정 및 삭제 시 필요)</span>
 					</dd>
@@ -229,11 +329,26 @@
 				<input type="hidden" name="num" value="<%=dto.getNum() %>">
 				<input type="hidden" name="pageNum" value="<%=pageNum %>">
 			
-				<input type="button" value="수정하기" class="btn2" onclick="sendIt()"/>
-				<input type="reset" value="다시입력" class="btn2"
-				onclick="document.myForm.subject.focus()"/>
-				<input type="button" value="작성취소" class="btn2"
-				onclick="javascript:location.href='<%=cp%>/List.jsp?pageNum=<%=pageNum%>'"/>
+				<%
+				if(status==1)		// status == 1 -> 수정 액션 요청
+				{
+				%>
+					<input type="button" value="수정하기" class="btn2" onclick="sendIt()"/>
+					<input type="reset" value="다시입력" class="btn2"
+					onclick="document.myForm.subject.focus()"/>
+					<input type="button" value="작성취소" class="btn2"
+					onclick="javascript:location.href='<%=cp%>/List.jsp?pageNum=<%=pageNum%>'"/>
+				<%
+				}
+				else				// status == 2 -> 삭제 액션 요청
+				{
+				%>
+					<input type="button" value="삭제하기" class="btn2" onclick="removeIt()"/>
+					<input type="button" value="삭제취소" class="btn2"
+					onclick="javascript:location.href='<%=cp%>/List.jsp?pageNum=<%=pageNum%>'"/>
+				<%
+				}	
+				%>
 			</div><!-- #bbsCreated_footer -->
 			
 			

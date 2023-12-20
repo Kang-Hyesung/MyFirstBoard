@@ -163,9 +163,10 @@
 		
 		<div id="leftFooter">
 			<input type="button" value="수정" class="btn2" 
-			onclick="javascript:location.href='<%=cp%>/Updated.jsp?num=<%=dto.getNum()%>&pageNum=<%=pageNum%>'"/>
+			onclick="javascript:location.href='<%=cp%>/Updated.jsp?num=<%=dto.getNum()%>&pageNum=<%=pageNum%>&status=1'"/>
 			<input type="button" value="삭제" class="btn2" 
-			onclick="javascript:location.href='<%=cp%>/Deleted.jsp?num=<%=dto.getNum()%>'"/>
+			<%-- onclick="javascript:location.href='<%=cp%>/Deleted.jsp?num=<%=dto.getNum()%>'"/> --%>
+			onclick="javascript:location.href='<%=cp%>/Updated.jsp?num=<%=dto.getNum()%>&pageNum=<%=pageNum%>&status=2'"/>
 			
 		</div><!-- #leftFooter -->
 		

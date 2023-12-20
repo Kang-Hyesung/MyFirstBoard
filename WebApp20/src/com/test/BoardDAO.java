@@ -87,6 +87,7 @@ public class BoardDAO
 	
 	// DB 레코드의 갯수를 가져오는 메소드 정의(지금은 전체)
 	// -> 검색 기능을 추가하게 되면 수정하게 될 메소드(-> 검색 대상의 갯수)
+	/*
 	public int getDataCount()
 	{
 		int result = 0;
@@ -112,11 +113,49 @@ public class BoardDAO
 		
 		return result;
 	}//end getDataCount()
+	*/
+	
+	// check 검색 기능 추가 
+	// -> searchKey   : 제목 or 작성자 or 내용
+	//    searchValue : 입력값
+	public int getDataCount(String searchKey, String searchValue)
+	{
+		int result = 0;
+		
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		String sql = "";
+		
+		try
+		{	
+			// check
+			searchValue = "%" + searchValue + "%";
+			
+			sql = "SELECT COUNT(*) AS COUNT"
+					+ " FROM TBL_BOARD"
+					+ " WHERE " + searchKey + " LIKE ?";
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setString(1, searchValue);
+			
+			rs = pstmt.executeQuery();
+			if(rs.next())
+				result = rs.getInt("COUNT");
+			rs.close();
+			pstmt.close();
+			
+		} catch (Exception e)
+		{
+			System.out.println(e.toString());
+		}
+		
+		return result;
+	}//end getDataCount(String searchKey, String searchValue)
 	
 	
 	// 특정 영역의(시작번호 ~ 끝번호) 게시물의 목록을
 	// 읽어오는 메소드 정의
 	// -> 검색 기능을 추가하게 되면 수정하게 될 메소드(-> 검색 대상의 리스트)
+	/*
 	public List<BoardDTO> getList(int start, int end)
 	{
 		List<BoardDTO> result = new ArrayList<BoardDTO>();
@@ -166,8 +205,68 @@ public class BoardDAO
 		
 		return result;
 	}//end getList(int start, int end)
+	*/
 	
+	// check 검색 기능 추가 
+	// -> searchKey   : 제목 or 작성자 or 내용
+	//    searchValue : 입력값
 	// 특정 게시물 조회에 따른 조회 횟수 증가 메소드 정의
+	
+	public List<BoardDTO> getList(int start, int end, String searchKey, String searchValue)
+	{
+		List<BoardDTO> result = new ArrayList<BoardDTO>();
+		
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		String sql = "";
+		
+		try
+		{
+			// check
+			searchValue = "%" + searchValue + "%";										// 추가
+			
+			sql += "SELECT NUM, NAME, SUBJECT, HITCOUNT, CREATED";
+			sql += " FROM";
+			sql += " (";
+			sql += "    SELECT ROWNUM RNUM, DATA.*";
+			sql += "    FROM";
+			sql += "    (";
+			sql += "        SELECT NUM, NAME, SUBJECT, HITCOUNT, TO_CHAR(CREATED, 'YYYY-MM-DD') AS CREATED";
+			sql += "        FROM TBL_BOARD";
+			sql += "		WHERE " + searchKey + " LIKE ?";							// 추가
+			sql += "        ORDER BY NUM DESC";
+			sql += "    ) DATA";
+			sql += " )";
+			sql += " WHERE RNUM >= ? AND RNUM <= ?";
+			
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setString(1, searchValue);											// 추가
+			pstmt.setInt(2, start);														// 인덱스 변경
+			pstmt.setInt(3, end);														// 인덱스 변경
+			
+			rs = pstmt.executeQuery();
+			while(rs.next())
+			{
+				BoardDTO dto = new BoardDTO();
+				dto.setNum(rs.getInt("NUM"));
+				dto.setName(rs.getString("NAME"));
+				dto.setSubject(rs.getString("SUBJECT"));
+				dto.setHitCount(rs.getInt("HITCOUNT"));
+				dto.setCreated(rs.getString("CREATED"));
+				
+				result.add(dto);
+			}
+			rs.close();
+			pstmt.close();
+			
+		} catch (Exception e)
+		{
+			System.out.println(e.toString());
+		}
+		
+		return result;
+	}
+	
 	public int updateHitCount(int num)
 	{
 		int result = 0;

@@ -7,13 +7,16 @@
 	String cp = request.getContextPath();
 	
 	int num = Integer.parseInt(request.getParameter("num"));
+	String pageNum = request.getParameter("pageNum");
 	
 	Connection conn = DBConn.getConnection();
 	BoardDAO dao = new BoardDAO(conn);
 	
-	dao.deleteDate(num);
+	int result = dao.deleteDate(num);
 	
-	response.sendRedirect(cp + "/List.jsp");
+	// result 결과값에 따른 분기처리 코드 삽입 가능
 	
+	DBConn.close();
 	
+	response.sendRedirect(cp + "/List.jsp?pageNum=" + pageNum);
 %>

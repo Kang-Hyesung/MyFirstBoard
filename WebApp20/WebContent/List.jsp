@@ -1,3 +1,4 @@
+<%@page import="java.net.URLDecoder"%>
 <%@page import="com.test.BoardDTO"%>
 <%@page import="java.util.List"%>
 <%@page import="com.util.MyUtil"%>
@@ -27,8 +28,19 @@
 	String searchKey = request.getParameter("searchKey");
 	String searchValue = request.getParameter("searchValue");
 	
+	
 	if(searchKey != null)	// 검색 기능을 통해 이 페이지가 요청되었을 경우
 	{
+		// 테스트
+		// System.out.println("searchKey : " + searchKey + ", searchValue : " + searchValue);
+		
+		// 넘어온 요청이 GET 방식이라면 디코딩 처리할 수 있도록 코드 구성
+		// -> GET 은 한글 문자열을 인코딩해서 보내기 때문에
+		if(request.getMethod().equalsIgnoreCase("GET"))	
+		{
+			// 디코딩 처리
+			searchValue = URLDecoder.decode(searchValue, "UTF-8");
+		}
 		
 	}
 	else					// 검색 기능이 아닌 기본적인 페이지 요청이 이루어졌을 경우
@@ -42,7 +54,8 @@
 	MyUtil myUtil = new MyUtil();
 	
 	// 전체 데이터 갯수 구하기 -> 검색 데이터 갯수 구하기로 변경 예정
-	int dataCount = dao.getDataCount();	// 그냥 전체 레코드 수 뽑아옴
+	/* int dataCount = dao.getDataCount();	// 그냥 전체 레코드 수 뽑아옴 */
+	int dataCount = dao.getDataCount(searchKey, searchValue);
 	
 	// 전체 데이터를 기준으로 총 페이지 수 계산
 	int numPerPage = 10;										// 한 페이지에 표시할 데이터 갯수
@@ -65,7 +78,7 @@
 	// 가져올 리스트의 대역폭 확정
 	
 	// 실제 리스트 가져오기 -> 검색 데이터 리스트 구하기로 변경 예정
-	List<BoardDTO> lists = dao.getList(start, end);
+	List<BoardDTO> lists = dao.getList(start, end, searchKey, searchValue);
 	
 	// 페이징 처리
 	String param = "";
@@ -106,6 +119,23 @@
 <title>List.jsp</title>
 <link rel="stylesheet" type="text/css" href="<%=cp %>/css/style.css">
 <link rel="stylesheet" type="text/css" href="<%=cp %>/css/list.css">
+
+<script type="text/javascript">
+	function sendIt()
+	{
+		// 확인
+		// alert("함수 호출");
+		
+		var f = document.searchForm;
+		
+		// 검색 키워드에 대한 유효성 검사 코드 삽입 가능
+		
+		f.action = "<%=cp%>/List.jsp";	/* 자기 자신을 부르므로 사실 필요 없음 */
+		
+		f.submit();
+	}
+</script>
+
 </head>
 <body>
 <%-- 
@@ -124,13 +154,44 @@
 		<div id="leftHeader">
 		
 			<!-- 검색 폼 구성 -->
-			<form action="" name="searchForm" method="post">
+			<form action="" name="searchForm" method="post" >
+			<!-- <form action="" name="searchForm" method="get" > -->
 				<select name="searchKey" class="selectFiled">
+				<!-- 
 					<option value="subject">제목</option>
 					<option value="name">작성자</option>
 					<option value="content">내용</option>
+				 -->
+				 	
+				 	<%
+				 	if(searchKey.equals("name"))				// 수신한 searchKey 가 name 이라면
+				 	{
+				 	%>
+				 		<option value="subject">제목</option>
+						<option value="name" selected="selected">작성자</option>
+						<option value="content">내용</option>
+				 	<%
+				 	}
+				 	else if(searchKey.equals("content"))		// 수신한 searchKey 가 content 이라면
+				 	{
+				 	%>
+				 		<option value="subject">제목</option>
+						<option value="name" >작성자</option>
+						<option value="content" selected="selected">내용</option>
+				 	<%
+				 	}
+				 	else										// 수신한 searchKey 가 subject 이거나 없으면
+				 	{
+				 	%>
+				 		<option value="subject">제목</option>
+						<option value="name">작성자</option>
+						<option value="content">내용</option>
+				 	<%
+				 	}
+				 	%>
+				 		
 				</select>
-				<input type="text" name="searchValue" class="textFiled">
+				<input type="text" name="searchValue" class="textFiled" value="<%=searchValue%>">
 				<input type="button" value="검색" class="btn2" onclick="sendIt()">
 			</form>
 		
